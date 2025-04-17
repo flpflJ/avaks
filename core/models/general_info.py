@@ -1,4 +1,8 @@
-from sqlalchemy.orm import Mapped
+import array
+from typing import List, Optional
+
+from sqlalchemy import JSON
+from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
 
@@ -6,12 +10,12 @@ from .base import Base
 class RequestTable(Base):
     __tablename__ = 'RequestTable'
 
-    name: Mapped[str]
-    phone: Mapped[str]
-    email: Mapped[str]
-    field1: Mapped[str]
-    field2: Mapped[str]
-    field3: Mapped[str]
-    field4: Mapped[str]
-    file_name: Mapped[str]
-    drag_file: Mapped[bytes]
+    name: Mapped[Optional[str]] = mapped_column(nullable=True)
+    phone: Mapped[Optional[str]] = mapped_column(nullable=True)
+    email: Mapped[Optional[str]] = mapped_column(nullable=True)
+    dron_usage: Mapped[Optional[str]] = mapped_column(nullable=True)
+    dron_location: Mapped[Optional[str]] = mapped_column(nullable=True)
+    dron_realtime: Mapped[Optional[str]] = mapped_column(nullable=True)
+    dron_asset: Mapped[Optional[str]] = mapped_column(nullable=True)
+    file_name: Mapped[Optional[list[str]]] = mapped_column(JSON, nullable=True)
+    drag_file: Mapped[Optional[list[str]]] = mapped_column(JSON, nullable=True)

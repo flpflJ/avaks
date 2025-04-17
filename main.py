@@ -11,6 +11,7 @@ from api_v1 import router as router_v1
 @asynccontextmanager
 async def lifespan(app:FastAPI):
     async with db_helper.engine.begin() as conn:
+        #await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
 
     yield
@@ -26,4 +27,4 @@ app.add_middleware(
 )
 
 if __name__ == '__main__':
-    uvicorn.run('main:app', reload=True)
+    uvicorn.run('main:app', reload=True, host="0.0.0.0")

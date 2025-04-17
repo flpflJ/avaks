@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -18,15 +18,15 @@ class LLMReqBase(BaseModel):
 
 
 class RequestTableBase(BaseModel):
-    name: str
-    phone: str
-    email: str
-    field1: str
-    field2: str
-    field3: str
-    field4: str
-    file_name: str
-    drag_file: bytes
+    name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    dron_usage: Optional[str] = None
+    dron_location: Optional[str] = None
+    dron_realtime: Optional[str] = None
+    dron_asset: Optional[str] = None
+    file_name: Optional[list[str]] = None
+    drag_file: Optional[list[str]] = None
 
 
 class RequestTableCreate(RequestTableBase):
