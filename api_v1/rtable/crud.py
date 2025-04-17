@@ -18,4 +18,4 @@ async def create_request_table(session: AsyncSession, request_in: RequestTableCr
     req = RequestTable(**request_in.model_dump())
     session.add(req)
     await session.commit()
-    #return req
+    # return req

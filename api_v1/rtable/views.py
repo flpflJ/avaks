@@ -1,15 +1,14 @@
 import json
-import PyPDF2
 
 from g4f.client import Client
 
 from fastapi import APIRouter, HTTPException, status, Depends
-import requests
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
 from . import crud
 from .schemas import RequestTableCreate, RequestTable, LLMReqBase, LLMRespBase, EquipItems
+from .utils import split_text, createDocxSAU, create_survey_document, parse_raw_data
 
 router = APIRouter(prefix="/router", tags=['rrouter'])
 
@@ -43,17 +42,29 @@ def gpt(prompt: str):
 async def create_req(req_in: RequestTableCreate, session: AsyncSession = Depends(db_helper.session_dependency)):
 
     await crud.create_request_table(request_in=req_in,session=session)
-    prompt1 = ''
+    #print(req_in.dron_location)
+    prompt1 = f'''Ты выступаешь как технический специалист АВАКС. Цель — подготовить ответ для технического запроса клиента, который планирует использовать дрон в сложных климатических условиях. Используй профессиональный язык, но избегай избыточных формальностей. Подбирай самое оптимальное решение из всех имеющихся.
+
+    Даны ответы на вопросы:
+    - Для каких задач вам нужен дрон? {req_in.dron_usage}
+    - Планируемые локации использования дрона? {req_in.dron_location}
+    - Вас интересует работа в реальном времени или вас интересует запись какой-то информации? {req_in.dron_realtime}
+    - Какие характеристики для вас важны: время полёта, дальность, грузоподъёмность, тип камеры? {req_in.dron_asset}'''
     with open("2.txt", 'r', encoding='utf-8') as f:
-        prompt1 = f.read()
+        prompt1 += f.read()
     answer = gpt(prompt1)
-    print(answer)
+    #print(answer)
+    p1,p2= split_text(answer)
+    #print(p1,p2)
+    createDocxSAU(p1,req_in.email)
+    create_survey_document(parse_raw_data(p2),req_in.email)
+    #print(answer)
     text = ''
     with open("1.txt", 'r', encoding='utf-8') as f:
         text = f.read()
     prompt = (f''' {answer}
 
-     с учетом этой информации выбери подходящие устройства в необходимом количестве из вот этого текста {text} А также 
+     с учетом этой информации выбери подходящие устройства в необходимом количестве из вот этого текста {text}. Можешь также попробовать поискать коммерческие модели и предложить их. А также 
     ''')
 
     #print(gpt(prompt))
@@ -73,7 +84,7 @@ async def create_req(req_in: RequestTableCreate, session: AsyncSession = Depends
       Выведи только этот JSON только в таком формате, без лишних апострофов и символов и ничего больше. СТРОГО ЭТА СХЕМА!!!
     '''
     ans = gpt(prompt)
-    print(ans)
+    #print(ans)
     return json.loads(ans)
 
 
