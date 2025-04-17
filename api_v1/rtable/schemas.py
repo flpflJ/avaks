@@ -5,7 +5,10 @@ class RequestTableBase(BaseModel):
     name: str
     phone: str
     email: str
-    # 4 fields Mapped[str]
+    field1: str
+    field2: str
+    field3: str
+    field4: str
     drag_file: bytes
 
 
