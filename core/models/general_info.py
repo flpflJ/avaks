@@ -13,4 +13,5 @@ class RequestTable(Base):
     field2: Mapped[str]
     field3: Mapped[str]
     field4: Mapped[str]
+    file_name: Mapped[str]
     drag_file: Mapped[bytes]
