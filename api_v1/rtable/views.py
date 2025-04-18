@@ -54,10 +54,15 @@ async def create_req(req_in: RequestTableCreate, session: AsyncSession = Depends
         prompt1 += f.read()
     answer = gpt(prompt1)
     #print(answer)
+    with open(f"docs/data_analysis_{req_in.email}.txt", 'w', encoding='utf-8') as f:
+        f.write(answer)
     p1,p2= split_text(answer)
-    #print(p1,p2)
-    createDocxSAU(p1,req_in.email)
-    create_survey_document(parse_raw_data(p2),req_in.email)
+    print(p1,p2)
+    try:
+        createDocxSAU(p1,req_in.email)
+        create_survey_document(parse_raw_data(p2),req_in.email)
+    except:
+        pass
     #print(answer)
     text = ''
     with open("1.txt", 'r', encoding='utf-8') as f:
